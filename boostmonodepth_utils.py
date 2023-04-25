@@ -34,7 +34,7 @@ def run_boostmonodepth(img_names, src_folder, depth_folder):
     for i, (img_name, tgt_name) in enumerate(zip(img_names, tgt_names)):
         img = imageio.imread(img_name)
         H, W = img.shape[:2]
-        scale = 640. / max(H, W)
+        scale = 1280. / max(H, W)
 
         # resize and save depth
         target_height, target_width = int(round(H * scale)), int(round(W * scale))

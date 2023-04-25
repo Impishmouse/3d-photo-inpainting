@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from PIL import Image
 try:
     import cynetworkx as netx
 except ImportError:
@@ -2286,10 +2287,26 @@ def output_3d_photo(verts, colors, faces, Height, Width, hFov, vFov, tgt_poses, 
         for stereo in stereos:
             crop_stereos.append((stereo[atop:abuttom, aleft:aright, :3] * 1).astype(np.uint8))
             stereos = crop_stereos
-        clip = ImageSequenceClip(stereos, fps=config['fps'])
+        
         if isinstance(video_basename, list):
             video_basename = video_basename[0]
-        clip.write_videofile(os.path.join(output_dir, video_basename + '_' + video_traj_type + '.mp4'), fps=config['fps'])
+
+        # Write each frame as an image
+        frames_folder_name = f"{video_basename}_{video_traj_type}_frames"
+        frames_folder_path = os.path.join(output_dir, frames_folder_name)
+        if not os.path.exists(frames_folder_path):
+            os.makedirs(frames_folder_path)
+        for i, frame in enumerate(stereos):
+            # Convert the numpy array to a PIL Image object
+            pil_img = Image.fromarray(np.uint8(frame))
+
+            # Save the PIL Image object as an image file
+            filename = f"frame_{i:03d}.jpg"
+            filepath = os.path.join(frames_folder_path, filename)
+            pil_img.save(filepath)
+
+        clip = ImageSequenceClip(stereos, fps=config['fps'])
+        clip.write_videofile(os.path.join(output_dir, video_basename + '_' + video_traj_type + '.mp4'), fps=config['fps'], codec='libx264',bitrate='2000k')
 
 
 

@@ -27,28 +27,12 @@ from scipy.interpolate import interp1d
 from collections import namedtuple
 
 def path_planning(num_frames, x, y, z, path_type=''):
-    if path_type == 'straight-line':
-        corner_points = np.array([[0, 0, 0], [(0 + x) * 0.5, (0 + y) * 0.5, (0 + z) * 0.5], [x, y, z]])
-        corner_t = np.linspace(0, 1, len(corner_points))
-        t = np.linspace(0, 1, num_frames)
-        cs = interp1d(corner_t, corner_points, axis=0, kind='quadratic')
-        spline = cs(t)
-        xs, ys, zs = [xx.squeeze() for xx in np.split(spline, 3, 1)]
-    elif path_type == 'double-straight-line':
-        corner_points = np.array([[-x, -y, -z], [0, 0, 0], [x, y, z]])
-        corner_t = np.linspace(0, 1, len(corner_points))
-        t = np.linspace(0, 1, num_frames)
-        cs = interp1d(corner_t, corner_points, axis=0, kind='quadratic')
-        spline = cs(t)
-        xs, ys, zs = [xx.squeeze() for xx in np.split(spline, 3, 1)]        
-    elif path_type == 'circle':
-        xs, ys, zs = [], [], []
-        for frame_id, bs_shift_val in enumerate(np.arange(-2.0, 2.0, (4./num_frames))):
-            xs += [np.cos(bs_shift_val * np.pi) * 1 * x]
-            ys += [np.sin(bs_shift_val * np.pi) * 1 * y]
-            zs += [np.cos(bs_shift_val * np.pi/2.) * 1 * z]
-        xs, ys, zs = np.array(xs), np.array(ys), np.array(zs)
-
+    corner_points = np.array([[0 - x * 0.5, 0, 0], [0, 0, 0], [0 + x * 0.5, 0, 0]])
+    corner_t = np.linspace(0, 1, len(corner_points))
+    t = np.linspace(0, 1, num_frames)
+    cs = interp1d(corner_t, corner_points, axis=0, kind='quadratic')
+    spline = cs(t)
+    xs, ys, zs = [xx.squeeze() for xx in np.split(spline, 3, 1)]
     return xs, ys, zs
 
 def open_small_mask(mask, context, open_iteration, kernel):
