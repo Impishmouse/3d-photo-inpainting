@@ -18,6 +18,12 @@ from boostmonodepth_utils import run_boostmonodepth
 from MiDaS.monodepth_net import MonoDepthNet
 import MiDaS.MiDaS_utils as MiDaS_utils
 from bilateral_filtering import sparse_bilateral_filtering
+import os
+#os.environ['QT_DEBUG_PLUGINS'] = '1'
+import subprocess
+subprocess.run('nvidia-smi', shell=True)
+from pyvirtualdisplay import Display
+display = Display(visible=0, size=(1920, 1080)).start()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, default='argument.yml',help='Configure of post processing')
